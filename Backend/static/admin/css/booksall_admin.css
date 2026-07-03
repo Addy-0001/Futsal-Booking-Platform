@@ -1,0 +1,947 @@
+/* ============================================================
+   Booksall admin theme — dark "night-stadium" + neon lime.
+   Matches the Booksall frontend (#0a0a0a base, #c9ff47 accent,
+   Barlow Condensed display type). Pure CSS-variable + component
+   overrides on top of Django's stock admin — no third-party deps.
+   ============================================================ */
+
+/* Force the brand palette in light, dark, and auto modes. */
+:root,
+html[data-theme="light"],
+html[data-theme="dark"] {
+  --primary: #c9ff47;
+  --primary-fg: #0a0a0a;
+  --secondary: #141414;
+  --accent: #c9ff47;
+
+  --body-fg: #e6e6e6;
+  --body-bg: #0a0a0a;
+  --body-quiet-color: #9a9a9a;
+  --body-medium-color: #bdbdbd;
+  --body-loud-color: #ffffff;
+
+  --header-color: #c9ff47;
+  --header-branding-color: #c9ff47;
+  --header-bg: #0f0f0f;
+  --header-link-color: #f0f0f0;
+
+  --breadcrumbs-fg: #9a9a9a;
+  --breadcrumbs-link-fg: #d6ff6b;
+  --breadcrumbs-bg: #141414;
+
+  --link-fg: #c9ff47;
+  --link-hover-color: #d9ff6b;
+  --link-selected-fg: #eaffb0;
+
+  --hairline-color: rgba(255, 255, 255, 0.08);
+  --border-color: rgba(255, 255, 255, 0.12);
+
+  --error-fg: #ff6b6b;
+  --message-success-bg: #14331f;
+  --message-warning-bg: #3a2f12;
+  --message-error-bg: #3a1414;
+
+  --darkened-bg: #111111;
+  --selected-bg: #161616;
+  --selected-row: #1e2a12;
+
+  --button-bg: #c9ff47;
+  --button-fg: #0a0a0a;
+  --button-hover-bg: #d9ff6b;
+  --default-button-bg: #aef01f;
+  --default-button-hover-bg: #c9ff47;
+  --close-button-bg: #2a2a2a;
+  --close-button-hover-bg: #383838;
+  --delete-button-bg: #ef4444;
+  --delete-button-hover-bg: #dc2626;
+
+  --object-tools-fg: #0a0a0a;
+  --object-tools-bg: #c9ff47;
+  --object-tools-hover-bg: #d9ff6b;
+
+  --font-family-primary: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+
+html, body {
+  background: #0a0a0a;
+  color: var(--body-fg);
+  font-family: var(--font-family-primary);
+}
+
+a:link, a:visited { color: var(--link-fg); }
+a:hover, a:focus { color: var(--link-hover-color); }
+
+/* ── Header / branding ─────────────────────────────────────── */
+#header {
+  background: #0f0f0f;
+  border-bottom: 1px solid rgba(201, 255, 71, 0.18);
+  color: #f0f0f0;
+  padding: 14px 40px;
+}
+#branding #site-name {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  font-weight: 400;
+}
+.booksall-brand {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 900;
+  font-size: 30px;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: #f0f0f0 !important;
+}
+.booksall-brand span { color: #c9ff47; }
+.booksall-badge {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #0a0a0a;
+  background: #c9ff47;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+#user-tools { color: #9a9a9a; font-size: 12px; }
+#user-tools a { border-bottom: none; color: #d6ff6b; }
+#user-tools a:hover { color: #c9ff47; }
+
+/* Hide the (now cosmetic) light/dark toggle — theme is always dark. */
+button.theme-toggle { display: none; }
+
+/* ============================================================
+   Top navbar (WHMCS-style) — replaces Django's default left
+   sidebar. Desk-first: no collapsing/hamburger behaviour, just a
+   clean row of tabs with hover/click dropdowns for multi-model
+   apps. Sticky so it stays put while scrolling long changelists.
+   ============================================================ */
+.bk-topnav {
+  position: sticky;
+  top: 0;
+  z-index: 250;
+  background: #0f0f0f;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.bk-topnav__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  padding: 0 34px;
+}
+.bk-topnav__item,
+.bk-topnav__dropdown > .bk-topnav__link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 13px 16px;
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 700;
+  font-size: 13.5px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #b8b8b8 !important;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+.bk-topnav__item:hover,
+.bk-topnav__dropdown:hover > .bk-topnav__link,
+.bk-topnav__dropdown:focus-within > .bk-topnav__link,
+.bk-topnav__item.is-active,
+.bk-topnav__dropdown.is-active > .bk-topnav__link {
+  color: #c9ff47 !important;
+  border-bottom-color: #c9ff47;
+  background: rgba(201, 255, 71, 0.04);
+}
+.bk-topnav__caret { font-size: 10px; opacity: 0.7; }
+.bk-navicon { width: 15px; height: 15px; flex-shrink: 0; }
+
+/* Daily-check groups (Sales, Support) get a small accent dot so they read
+   as "check these first" at a glance without shouting. */
+.bk-daily-dot {
+  width: 6px; height: 6px; border-radius: 999px;
+  background: #c9ff47; display: inline-block;
+  box-shadow: 0 0 0 3px rgba(201, 255, 71, 0.15);
+}
+.bk-topnav__dropdown--daily > .bk-topnav__link { color: #e2ffb0 !important; }
+
+/* Dropdown panel — a mega-menu with one column per app, so a group like
+   "Sales" (Bookings, Invoices, Pricing) shows all three side by side
+   instead of one dropdown per app. */
+.bk-topnav__dropdown { position: relative; padding: 0; }
+.bk-topnav__mega {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 10px;
+  margin-top: -1px;
+  background: #141414;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0 12px 12px 12px;
+  box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.85);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition: opacity 0.12s ease, transform 0.12s ease, visibility 0.12s;
+  z-index: 260;
+}
+.bk-topnav__dropdown:hover > .bk-topnav__mega,
+.bk-topnav__dropdown:focus-within > .bk-topnav__mega {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.bk-topnav__mega-col { min-width: 190px; padding: 0 6px; }
+.bk-topnav__mega-col + .bk-topnav__mega-col { border-left: 1px solid rgba(255, 255, 255, 0.07); }
+.bk-topnav__mega-heading {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #777;
+  padding: 6px 12px 4px;
+}
+.bk-topnav__menu-link {
+  display: block;
+  padding: 8px 12px;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #d6d6d6 !important;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.bk-topnav__menu-link:hover,
+.bk-topnav__menu-link.is-active {
+  background: rgba(201, 255, 71, 0.1);
+  color: #c9ff47 !important;
+}
+.bk-topnav__menu-link--disabled {
+  color: #5a5a5a !important;
+  cursor: default;
+}
+.bk-topnav__menu-link--disabled:hover { background: none; }
+/* Single-model apps render as one plain link (no column heading) — give it
+   a touch of top alignment so it doesn't look orphaned next to columns. */
+.bk-topnav__menu-link--solo { align-self: flex-start; margin-top: 0; }
+
+/* Account menu — pinned to the far right of the navbar, everything else
+   (Dashboard + the app groups) stays left-aligned. */
+.bk-topnav__account { margin-left: auto; }
+.bk-topnav__account-name {
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bk-topnav__mega--right { left: auto; right: 0; border-radius: 12px 0 12px 12px; }
+.bk-topnav__mega--right .bk-topnav__mega-heading {
+  white-space: normal;
+  max-width: 220px;
+  color: #9a9a9a;
+}
+.bk-topnav__logout-form { margin: 0; }
+.bk-topnav__menu-link--logout {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  font: inherit;
+  cursor: pointer;
+}
+.bk-topnav__menu-link--logout:hover { color: #c9ff47 !important; }
+
+/* ── Breadcrumbs ───────────────────────────────────────────── */
+div.breadcrumbs {
+  background: #141414;
+  color: #7a7a7a;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 12px 40px;
+}
+div.breadcrumbs a { color: #d6ff6b; }
+div.breadcrumbs a:hover { color: #c9ff47; }
+
+/* ── Content shell ─────────────────────────────────────────── */
+#content { padding: 24px 40px; }
+#content-main, #content-related { color: var(--body-fg); }
+
+/* ── Modules / cards ───────────────────────────────────────── */
+.module {
+  background: #141414;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 12px 30px -18px rgba(0, 0, 0, 0.9);
+}
+.module h2,
+.module caption,
+.inline-group h2,
+.dashboard .module table caption {
+  background: #1a1a1a;
+  color: #c9ff47;
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.module > table { margin: 0; }
+.module p, .module ul, .module blockquote { padding: 0 16px; }
+
+/* Dashboard app list */
+.dashboard #content { max-width: 1100px; }
+.app-list, ul.actionlist { list-style: none; }
+
+/* ── Tables ────────────────────────────────────────────────── */
+table { border-collapse: separate; border-spacing: 0; }
+thead th, thead td {
+  background: #161616;
+  color: #b8b8b8;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-weight: 600;
+}
+thead th a:link, thead th a:visited { color: #b8b8b8; }
+tbody tr { background: #141414; }
+#result_list tbody tr td, #result_list tbody tr th {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+#result_list tbody tr:hover td,
+#result_list tbody tr:hover th { background: #1b1b1b; }
+tr.selected td, tr.selected th { background: #1e2a12 !important; }
+.row1 { background: #141414; }
+.row2 { background: #171717; }
+table thead th.sorted { background: #1c1c1c; }
+
+/* ── Forms / inputs ────────────────────────────────────────── */
+input[type=text], input[type=password], input[type=email], input[type=url],
+input[type=number], input[type=tel], input[type=search], textarea, select,
+.vTextField {
+  background: #1a1a1a;
+  color: #f0f0f0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: #c9ff47;
+  outline: 2px solid rgba(201, 255, 71, 0.25);
+  outline-offset: 0;
+}
+fieldset.module { padding-bottom: 6px; }
+.form-row { border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+.aligned label { color: #bdbdbd; }
+.help, .helptext, div.help { color: #7f7f7f; }
+.selector-available h2, .selector-chosen h2 { border-radius: 8px 8px 0 0; }
+
+/* ── Buttons ───────────────────────────────────────────────── */
+.button, input[type=submit], input[type=button], .submit-row input, a.button {
+  background: #c9ff47;
+  color: #0a0a0a;
+  border: none;
+  border-radius: 9px;
+  font-weight: 600;
+  padding: 9px 16px;
+  transition: background 0.15s ease, transform 0.05s ease;
+}
+.button:hover, input[type=submit]:hover, input[type=button]:hover,
+.submit-row input:hover, a.button:hover {
+  background: #d9ff6b;
+  color: #0a0a0a;
+}
+.button:active, input[type=submit]:active { transform: translateY(1px); }
+.button.default, input[type=submit].default, .submit-row input.default {
+  background: #aef01f;
+  color: #0a0a0a;
+  font-weight: 700;
+}
+.button.default:hover, input[type=submit].default:hover { background: #c9ff47; }
+.button[disabled], input[type=submit][disabled] { opacity: 0.45; }
+
+/* Secondary / cancel actions read as subtle dark chips */
+.submit-row a.closelink, .submit-row .deletelink-box a, a.closelink {
+  background: #1e1e1e;
+  color: #d6d6d6;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 9px;
+}
+.deletelink, a.deletelink, .submit-row a.deletelink {
+  background: #ef4444 !important;
+  color: #fff !important;
+  border-radius: 9px;
+}
+.deletelink:hover { background: #dc2626 !important; }
+.submit-row { background: transparent; border: none; padding: 16px 0; }
+
+/* ── Object tools (Add / History / View on site) ───────────── */
+.object-tools a, .object-tools a:link, .object-tools a:visited {
+  background: #c9ff47;
+  color: #0a0a0a;
+  border-radius: 999px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.object-tools a:hover { background: #d9ff6b; color: #0a0a0a; }
+.object-tools a.addlink::before,
+.object-tools a.viewsitelink::before,
+.object-tools a.historylink::before { filter: none; }
+
+/* ── Changelist filter sidebar ─────────────────────────────── */
+#changelist-filter {
+  background: #141414;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+}
+#changelist-filter h2 {
+  background: #1a1a1a;
+  color: #c9ff47;
+  font-family: "Barlow Condensed", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 14px 14px 0 0;
+}
+#changelist-filter h3 { color: #bdbdbd; }
+#changelist-filter li.selected a { color: #c9ff47; }
+#changelist-filter a:hover { color: #d9ff6b; }
+#changelist .actions {
+  background: #141414;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  color: #bdbdbd;
+}
+
+/* Search bar */
+#changelist-search input[type=text] { min-width: 260px; }
+#toolbar { padding: 10px 0; border: none; background: transparent; }
+
+/* ── Pagination ────────────────────────────────────────────── */
+.paginator { color: #8a8a8a; border-top: 1px solid rgba(255, 255, 255, 0.06); }
+.paginator a:link, .paginator a:visited {
+  background: #1a1a1a;
+  color: #d6ff6b;
+  border-radius: 6px;
+  padding: 4px 9px;
+}
+.paginator a:hover { background: #c9ff47; color: #0a0a0a; }
+.paginator .this-page { background: #c9ff47; color: #0a0a0a; border-radius: 6px; padding: 4px 9px; }
+
+/* ── Messages ──────────────────────────────────────────────── */
+ul.messagelist li {
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #eaeaea;
+}
+ul.messagelist li.success { background: #14331f; border-color: rgba(201, 255, 71, 0.3); }
+ul.messagelist li.warning { background: #3a2f12; }
+ul.messagelist li.error { background: #3a1414; }
+
+/* ── Login screen ──────────────────────────────────────────── */
+body.login { background: #0a0a0a; }
+body.login #container {
+  background: #141414;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.9);
+  overflow: hidden;
+}
+body.login #header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  justify-content: center;
+}
+body.login .booksall-brand { font-size: 26px; }
+body.login #content { padding: 26px 34px; }
+body.login .submit-row { padding: 8px 0 0; }
+body.login .submit-row input { width: 100%; }
+
+/* ── Selected/active rows, help tooltips, inlines ──────────── */
+.inline-related h3 {
+  background: #1a1a1a;
+  color: #d6ff6b;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.inline-group .tabular tr.has_original td { background: #141414; }
+.add-row a, .add-row td { background: transparent; }
+.add-row a { color: #c9ff47; }
+
+/* Calendar / clock widgets */
+.calendarbox, .clockbox { background: #141414; border: 1px solid rgba(255, 255, 255, 0.1); }
+.calendar caption, .calendarbox h2 { background: #1a1a1a; color: #c9ff47; }
+
+/* ============================================================
+   Dashboard (admin index)
+   ============================================================ */
+.bk-dash-title {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  font-size: 34px;
+  color: #f0f0f0;
+  margin: 4px 0 4px;
+  display: inline-block;
+}
+.bk-live {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 20px;
+  font-size: 12px;
+  color: #7a7a7a;
+}
+.bk-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18);
+  animation: bk-pulse-dot-green 2s ease-in-out infinite;
+}
+@keyframes bk-pulse-dot-green {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18); }
+  50% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.3); }
+}
+.booksall-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  grid-auto-flow: dense; /* fills gaps left by 2-col "wide" cards instead of stranding them */
+  gap: 16px;
+  margin-bottom: 26px;
+}
+.bk-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 92px;
+  padding: 16px 20px;
+  background: #141414;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  text-decoration: none;
+  transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  animation: bk-card-in 0.45s ease forwards;
+  animation-delay: calc(var(--bk-i, 0) * 45ms);
+}
+.bk-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(201, 255, 71, 0.5);
+  background: #171717;
+  box-shadow: 0 14px 30px -18px rgba(201, 255, 71, 0.25);
+}
+.bk-card::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: rgba(255, 255, 255, 0.08);
+}
+.bk-card--accent::before { background: #c9ff47; }
+.bk-card--wide { grid-column: span 2; }
+.bk-card__icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.06);
+  color: #9a9a9a;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.bk-card__icon svg { width: 21px; height: 21px; }
+.bk-card--accent .bk-card__icon { background: rgba(201, 255, 71, 0.14); color: #c9ff47; }
+.bk-card:hover .bk-card__icon { background: rgba(201, 255, 71, 0.16); color: #c9ff47; }
+.bk-card__body { min-width: 0; flex: 1 1 auto; }
+.bk-card__label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #888888;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bk-card__value {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 800;
+  font-size: clamp(20px, 2.4vw, 34px);
+  line-height: 1.15;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  transition: color 0.2s ease;
+}
+.bk-card--accent .bk-card__value { color: #c9ff47; }
+.bk-card__sub { font-size: 12px; color: #9a9a9a; }
+
+/* Brief highlight when the 2-minute poll changes a card's value — makes the
+   "this dashboard is alive" refresh actually visible instead of a silent
+   DOM swap. */
+.bk-card--flash .bk-card__value { animation: bk-flash-text 1.1s ease; }
+.bk-card--flash { animation: bk-flash-card 1.1s ease; }
+
+@keyframes bk-card-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes bk-flash-card {
+  0% { border-color: rgba(201, 255, 71, 0.7); box-shadow: 0 0 0 3px rgba(201, 255, 71, 0.12); }
+  100% { border-color: rgba(255, 255, 255, 0.08); box-shadow: none; }
+}
+@keyframes bk-flash-text {
+  0%, 30% { color: #c9ff47; }
+  100% { color: inherit; }
+}
+
+.bk-bookingbar {
+  background: #141414;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 16px 20px;
+  margin-bottom: 30px;
+}
+.bk-bookingbar__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #c9ff47;
+}
+.bk-bookingbar__total { color: #9a9a9a; font-size: 13px; letter-spacing: 0; }
+.bk-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.bk-pill {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e0e0e0;
+}
+.bk-pill--warn { background: #3a2f12; border-color: rgba(245, 200, 66, 0.3); }
+.bk-pill--ok { background: #14331f; border-color: rgba(201, 255, 71, 0.35); color: #c9ff47; }
+.bk-pill--muted { background: #1a1a1a; color: #9a9a9a; }
+
+.bk-applist-heading {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #888888;
+  font-size: 14px;
+  margin: 6px 0 14px;
+}
+
+/* ============================================================
+   To-do list + response-time chart — the homepage's two panels
+   below the stat cards. Both are re-rendered by JS every time the
+   dashboard polls (every 2 minutes), so styling targets classes
+   only, never nth-child/order assumptions.
+   ============================================================ */
+.bk-dash-row {
+  display: grid;
+  grid-template-columns: minmax(280px, 1fr) minmax(320px, 1.2fr);
+  gap: 16px;
+  margin-bottom: 16px;
+  align-items: stretch;
+}
+.bk-dash-row--wide { grid-template-columns: 1fr; margin-bottom: 30px; }
+@media (max-width: 900px) {
+  .bk-dash-row { grid-template-columns: 1fr; }
+}
+.bk-panel {
+  background: #141414;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 18px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  animation: bk-card-in 0.5s ease forwards;
+  animation-delay: 0.25s;
+}
+.bk-panel__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 15px;
+  color: #f0f0f0;
+  margin-bottom: 14px;
+}
+.bk-panel__hint {
+  font-family: "Inter", sans-serif;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+  font-size: 11.5px;
+  color: #777;
+}
+
+/* To-do rows */
+.bk-todo-empty {
+  color: #7a7a7a;
+  font-size: 13px;
+  padding: 10px 2px;
+}
+.bk-todo-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 10px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #e6e6e6 !important;
+  transition: background 0.12s ease;
+}
+a.bk-todo-row:hover { background: #1b1b1b; }
+.bk-todo-row + .bk-todo-row { margin-top: 2px; }
+.bk-todo-dot { width: 8px; height: 8px; border-radius: 999px; flex-shrink: 0; background: #666; }
+.bk-todo-row--urgent .bk-todo-dot {
+  background: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+  animation: bk-pulse-dot 1.8s ease-in-out infinite;
+}
+.bk-todo-row--warn .bk-todo-dot { background: #f5c842; box-shadow: 0 0 0 3px rgba(245, 200, 66, 0.15); }
+.bk-todo-row--normal .bk-todo-dot { background: #9a9a9a; }
+
+@keyframes bk-pulse-dot {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15); }
+  50% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0.28); }
+}
+.bk-todo-body { display: flex; flex-direction: column; gap: 1px; flex: 1 1 auto; min-width: 0; }
+.bk-todo-label { font-size: 13.5px; font-weight: 500; }
+.bk-todo-flag {
+  font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+}
+.bk-todo-row--urgent .bk-todo-flag { color: #ff8a8a; }
+.bk-todo-row--warn .bk-todo-flag { color: #f5c842; }
+.bk-todo-count {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  color: #f0f0f0;
+  flex-shrink: 0;
+}
+
+/* Response-time chart */
+#bk-response-chart-wrap {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bk-chart-empty { color: #7a7a7a; font-size: 13px; }
+
+/* Booking-activity bar chart (full-width panel) */
+#bk-activity-chart-wrap {
+  position: relative;
+  height: 220px;
+}
+
+/* ============================================================
+   WHMCS-style ticket quick actions
+   ============================================================ */
+.bk-quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px;
+  margin: 0 0 12px;
+  background: #141414;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+}
+.bk-qa-label {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 12px;
+  color: #888888;
+  margin-right: 4px;
+}
+.bk-qa {
+  background: #1e1e1e;
+  color: #e6e6e6;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.bk-qa:hover { background: #262626; border-color: rgba(255, 255, 255, 0.25); }
+.bk-qa-primary { background: #c9ff47; color: #0a0a0a; border-color: transparent; }
+.bk-qa-primary:hover { background: #d9ff6b; color: #0a0a0a; }
+.bk-qa-muted { background: #2a2a2a; color: #bdbdbd; }
+.bk-qa-sep { flex: 1 1 auto; }
+
+/* Sidebar variant — stacked full-width buttons instead of a wrapped row,
+   since the column is narrow. */
+.bk-quick-actions--sidebar {
+  flex-direction: column;
+  align-items: stretch;
+}
+.bk-quick-actions--sidebar .bk-qa { width: 100%; text-align: center; }
+.bk-quick-actions--sidebar .bk-qa-sep { display: none; }
+
+/* ============================================================
+   Ticket detail page — WHMCS-style two column layout.
+   Left: subject + opening message + reply thread (one conversation).
+   Right: quick actions + compact metadata cards. Built by
+   templates/admin/support/supportticket/change_form.html re-slotting
+   the fieldsets SupportTicketAdmin.get_fieldsets tags with
+   "bk-ticket-main-fs" / "bk-ticket-side-fs".
+   ============================================================ */
+.bk-ticket-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2.1fr) minmax(260px, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+@media (max-width: 1000px) {
+  .bk-ticket-layout { grid-template-columns: 1fr; }
+}
+.bk-ticket-main .module,
+.bk-ticket-side .module { margin-bottom: 14px; }
+.bk-ticket-side .module h2 { font-size: 13px; padding: 10px 14px; }
+.bk-ticket-side .form-row { padding: 8px 14px; }
+.bk-ticket-side .aligned label { font-size: 12.5px; }
+
+/* Conversation thread (the TicketReply inline) */
+.bk-reply-thread.module { padding-bottom: 6px; }
+.bk-reply-thread > h2 { font-size: 13px; }
+.bk-reply-thread .inline-related {
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0 16px 12px;
+}
+.bk-reply-thread .inline-related h3 {
+  background: none;
+  border: none;
+  padding: 0 2px 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #666;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.bk-reply-thread .inline-related h3 b,
+.bk-reply-thread .inline-related h3 .inline_label { display: none; }
+.bk-reply-thread .inline-related h3 .delete { float: right; }
+.bk-reply-thread .form-row { border: none; padding: 0; }
+
+/* Redundant raw fields — the pretty bubble already shows this content, so
+   hide the duplicate readonly/plain rows Django still renders alongside it. */
+.bk-reply-thread .inline-related.has_original .field-body,
+.bk-reply-thread .inline-related.has_original .field-author,
+.bk-reply-thread .inline-related.has_original .field-created_at,
+.bk-reply-thread .inline-related.has_original .field-is_staff_reply,
+.bk-reply-thread .inline-related.has_original .field-is_internal_note {
+  display: none;
+}
+.bk-reply-thread .inline-related.empty-form .field-rendered_body,
+.bk-reply-thread .inline-related.empty-form .field-author,
+.bk-reply-thread .inline-related.empty-form .field-created_at,
+.bk-reply-thread .inline-related.empty-form .field-is_staff_reply {
+  display: none;
+}
+
+/* The composer (new-reply) row reads as one clear "write a reply" box. */
+.bk-reply-thread .inline-related.empty-form {
+  background: #171717;
+  border: 1px dashed rgba(201, 255, 71, 0.3) !important;
+  border-radius: 14px;
+  padding: 14px 16px !important;
+  margin: 4px 16px 14px;
+}
+.bk-reply-thread .inline-related.empty-form h3 { display: none; }
+.bk-reply-thread .inline-related.empty-form .field-body label { display: none; }
+.bk-reply-thread .inline-related.empty-form .field-is_internal_note {
+  margin-top: 8px;
+  font-size: 12px;
+}
+
+/* Chat bubbles — shared by the opening message (message_display) and every
+   thread reply (rendered_body). */
+.bk-reply-bubble {
+  border-radius: 14px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #171717;
+}
+.bk-reply-bubble--staff {
+  background: rgba(201, 255, 71, 0.06);
+  border-color: rgba(201, 255, 71, 0.22);
+}
+.bk-reply-bubble__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+.bk-reply-bubble__author { font-weight: 700; color: #f0f0f0; }
+.bk-reply-bubble--staff .bk-reply-bubble__author { color: #c9ff47; }
+.bk-reply-bubble__time { color: #7a7a7a; }
+.bk-reply-tag {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #f5c842;
+  background: rgba(245, 200, 66, 0.12);
+  padding: 2px 7px;
+  border-radius: 999px;
+}
+.bk-reply-bubble__body {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: #dcdcdc;
+}
+.bk-reply-bubble__body p { margin: 0 0 8px; }
+.bk-reply-bubble__body p:last-child { margin-bottom: 0; }
+.bk-reply-bubble__body img { max-width: 100%; border-radius: 8px; }
+
+/* The opening-message bubble sits inside the main fieldset, not the
+   readonly-field chrome Django normally wraps it in. */
+.bk-ticket-main-fs .field-message_display .readonly { display: contents; }
+
+/* Scrollbar polish (WebKit) */
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-track { background: #0a0a0a; }
+::-webkit-scrollbar-thumb { background: #262626; border-radius: 8px; border: 3px solid #0a0a0a; }
+::-webkit-scrollbar-thumb:hover { background: #333; }

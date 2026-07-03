@@ -1,0 +1,110 @@
+{% extends "admin/base.html" %}
+{% load i18n static booksall_admin_extras %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Booksall Admin') }}{% endblock %}
+
+{% block extrastyle %}{{ block.super }}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'admin/css/booksall_admin.css' %}">
+{% endblock %}
+
+{% block branding %}
+<div id="site-name">
+  <a href="{% url 'admin:index' %}" class="booksall-brand">BOOKS<span>ALL</span></a>
+  <span class="booksall-badge">{% translate "Admin" %}</span>
+</div>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{# Account management (welcome msg / view site / change password / log out)
+   moves out of the header and into a user-icon dropdown on the right of the
+   navbar below — so the header stays just branding, and everything
+   interactive lives in one nav. #}
+{% block usertools %}{% endblock %}
+
+{# WHMCS-style top navbar — replaces Django's default left sidebar. Apps are
+   grouped into Sales / Support / Users / System / Misc (see
+   booksall_admin_extras.group_nav_apps) so related things live under one
+   dropdown instead of one tab per Django app. Sales and Support are the
+   groups worth checking daily, so they get an accent dot. The account menu
+   is pinned to the right with a user-icon trigger. #}
+{% block nav-breadcrumbs %}
+<nav class="bk-topnav" aria-label="{% translate 'Primary navigation' %}">
+  <div class="bk-topnav__inner">
+    <a href="{% url 'admin:index' %}"
+       class="bk-topnav__item{% if request.resolver_match.app_name == 'admin' and request.resolver_match.url_name == 'index' %} is-active{% endif %}">
+      {% nav_icon "home" %}{% translate "Dashboard" %}
+    </a>
+    {% group_nav_apps as nav_groups %}
+    {% for group in nav_groups %}
+      <div class="bk-topnav__item bk-topnav__dropdown{% if group.is_active %} is-active{% endif %}{% if group.highlight %} bk-topnav__dropdown--daily{% endif %}"
+           tabindex="0">
+        <span class="bk-topnav__link">
+          {% nav_icon group.icon %}{{ group.label }}
+          {% if group.highlight %}<i class="bk-daily-dot" title="{% translate 'Worth checking daily' %}"></i>{% endif %}
+          <span class="bk-topnav__caret" aria-hidden="true">▾</span>
+        </span>
+        <div class="bk-topnav__mega">
+          {% for app in group.apps %}
+            {% if app.models|length == 1 %}
+              <a href="{{ app.models.0.admin_url|default:app.app_url }}"
+                 class="bk-topnav__menu-link bk-topnav__menu-link--solo{% if app.is_active %} is-active{% endif %}">
+                {{ app.name }}
+              </a>
+            {% else %}
+              <div class="bk-topnav__mega-col">
+                <div class="bk-topnav__mega-heading">{{ app.name }}</div>
+                {% for model in app.models %}
+                  {% if model.admin_url %}
+                    <a href="{{ model.admin_url }}"
+                       class="bk-topnav__menu-link{% if model.is_active %} is-active{% endif %}">
+                      {{ model.name }}
+                    </a>
+                  {% else %}
+                    <span class="bk-topnav__menu-link bk-topnav__menu-link--disabled">{{ model.name }}</span>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+
+    {% if has_permission %}
+      {% url 'django-admindocs-docroot' as docsroot %}
+      <div class="bk-topnav__item bk-topnav__dropdown bk-topnav__account" tabindex="0">
+        <span class="bk-topnav__link">
+          {% nav_icon "account" %}
+          <span class="bk-topnav__account-name">{% firstof user.get_short_name user.get_username %}</span>
+          <span class="bk-topnav__caret" aria-hidden="true">▾</span>
+        </span>
+        <div class="bk-topnav__mega bk-topnav__mega--right">
+          <div class="bk-topnav__mega-col">
+            <div class="bk-topnav__mega-heading">
+              {% translate "Signed in as" %} {% firstof user.get_short_name user.get_username %}
+            </div>
+            {% if site_url %}
+              <a href="{{ site_url }}" class="bk-topnav__menu-link">{% translate "View site" %}</a>
+            {% endif %}
+            {% if docsroot and user.is_active and user.is_staff %}
+              <a href="{{ docsroot }}" class="bk-topnav__menu-link">{% translate "Documentation" %}</a>
+            {% endif %}
+            {% if user.has_usable_password %}
+              <a href="{% url 'admin:password_change' %}" class="bk-topnav__menu-link">{% translate "Change password" %}</a>
+            {% endif %}
+            <form id="bk-logout-form" method="post" action="{% url 'admin:logout' %}" class="bk-topnav__logout-form">
+              {% csrf_token %}
+              <button type="submit" class="bk-topnav__menu-link bk-topnav__menu-link--logout">{% translate "Log out" %}</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</nav>
+{{ block.super }}
+{% endblock %}

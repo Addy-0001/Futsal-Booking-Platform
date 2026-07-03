@@ -1,0 +1,294 @@
+/* ============================================================
+   Rendered rich-text (ticket messages/replies) — .bk-prose
+   ============================================================ */
+.bk-prose { line-height: 1.6; word-break: break-word; }
+.bk-prose > :first-child { margin-top: 0; }
+.bk-prose > :last-child { margin-bottom: 0; }
+.bk-prose p { margin: 0 0 0.7em; }
+.bk-prose h1, .bk-prose h2, .bk-prose h3, .bk-prose h4 {
+  color: #f0f0f0; font-weight: 700; margin: 1em 0 0.4em; line-height: 1.25;
+}
+.bk-prose h1 { font-size: 1.4em; } .bk-prose h2 { font-size: 1.25em; } .bk-prose h3 { font-size: 1.1em; }
+.bk-prose a { color: #c9ff47; text-decoration: underline; }
+.bk-prose ul, .bk-prose ol { margin: 0 0 0.7em; padding-left: 1.4em; }
+.bk-prose li { margin: 0.2em 0; }
+.bk-prose blockquote {
+  border-left: 3px solid #c9ff47; margin: 0 0 0.7em; padding: 0.2em 0 0.2em 1em; color: #9a9a9a;
+}
+.bk-prose code {
+  background: #0f0f0f; border: 1px solid rgba(255,255,255,0.08); border-radius: 5px;
+  padding: 0.1em 0.4em; font-family: ui-monospace, monospace; font-size: 0.9em; color: #d6ff6b;
+}
+.bk-prose pre {
+  background: #0f0f0f; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;
+  padding: 0.9em 1em; overflow-x: auto; margin: 0 0 0.7em;
+}
+.bk-prose pre code { background: none; border: none; padding: 0; color: #e6e6e6; }
+.bk-prose img { max-width: 100%; height: auto; border-radius: 10px; margin: 0.4em 0; }
+.bk-prose table { border-collapse: collapse; margin: 0 0 0.7em; width: 100%; }
+.bk-prose th, .bk-prose td { border: 1px solid rgba(255,255,255,0.12); padding: 6px 10px; }
+.bk-prose th { background: #1a1a1a; }
+
+/* ── CKEditor 5 dark theme (scoped to our wrapper) ─────────── */
+.bk-rich-wrap {
+  --ck-color-base-background: #1a1a1a;
+  --ck-color-base-foreground: #1a1a1a;
+  --ck-color-base-border: rgba(255, 255, 255, 0.12);
+  --ck-color-base-text: #f0f0f0;
+  --ck-color-text: #f0f0f0;
+  --ck-color-toolbar-background: #141414;
+  --ck-color-toolbar-border: rgba(255, 255, 255, 0.12);
+  --ck-color-button-default-background: transparent;
+  --ck-color-button-default-hover-background: #262626;
+  --ck-color-button-default-active-background: #2a2a2a;
+  --ck-color-button-on-background: #262626;
+  --ck-color-button-on-hover-background: #303030;
+  --ck-color-button-on-color: #c9ff47;
+  --ck-color-input-background: #1a1a1a;
+  --ck-color-input-border: rgba(255, 255, 255, 0.14);
+  --ck-color-input-text: #f0f0f0;
+  --ck-color-dropdown-panel-background: #141414;
+  --ck-color-dropdown-panel-border: rgba(255, 255, 255, 0.12);
+  --ck-color-list-background: #141414;
+  --ck-color-list-button-hover-background: #262626;
+  --ck-color-panel-background: #141414;
+  --ck-color-panel-border: rgba(255, 255, 255, 0.12);
+}
+.bk-rich-wrap .ck.ck-editor__main > .ck-editor__editable {
+  background: #1a1a1a; color: #f0f0f0; border-color: rgba(255, 255, 255, 0.12);
+  border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; min-height: 160px;
+}
+.bk-rich-wrap .ck.ck-toolbar {
+  border-top-left-radius: 10px; border-top-right-radius: 10px;
+}
+.bk-rich-wrap .ck.ck-content a { color: #c9ff47; }
+.bk-rich-wrap .ck.ck-content code { background: #0f0f0f; color: #d6ff6b; padding: 0.1em 0.4em; border-radius: 4px; }
+.bk-rich-wrap .ck.ck-content pre { background: #0f0f0f; color: #e6e6e6; border-radius: 8px; }
+.bk-rich-wrap .ck.ck-editor__editable.ck-focused { border-color: #c9ff47; box-shadow: none; }
+
+:root {
+  /* ── Template dark palette ─────────────────────────────── */
+  --background: #0a0a0a;
+  --foreground: #f0f0f0;
+  --card: #141414;
+  --muted: #1a1a1a;
+  --secondary: #1e1e1e;
+  --muted-foreground: #888888;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  /* Neon lime accent */
+  --lime: #c9ff47;
+  --lime-hover: #d9ff6b;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--background);
+  color-scheme: dark;
+}
+
+body {
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/* Condensed display type — the template's signature look */
+.font-display {
+  font-family: "Barlow Condensed", "Inter", ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+h1, h2, h3 {
+  font-family: "Barlow Condensed", "Inter", ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+/* ============================================================
+   Surfaces
+   ============================================================ */
+.card-surface {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+}
+
+.bg-app { background-color: var(--background); }
+.bg-card { background-color: var(--card); }
+.bg-muted { background-color: var(--muted); }
+
+/* ============================================================
+   Gradient text helpers
+   ============================================================ */
+.text-gradient {
+  background-image: linear-gradient(95deg, #c9ff47 0%, #a8f52e 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ============================================================
+   Eyebrow / kicker label
+   ============================================================ */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: "Barlow Condensed", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   Dark section backdrops
+   ============================================================ */
+.bg-ink { background-color: var(--background); color: var(--foreground); }
+
+.bg-ink-gradient {
+  background:
+    radial-gradient(60rem 40rem at 80% -10%, rgba(201, 255, 71, 0.10), transparent 60%),
+    radial-gradient(50rem 40rem at 0% 110%, rgba(201, 255, 71, 0.06), transparent 55%),
+    linear-gradient(160deg, #0a0a0a 0%, #101010 55%, #0a0a0a 100%);
+}
+
+.bg-pitch-dots {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+.bg-pitch-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+.bg-mesh-lime {
+  background:
+    radial-gradient(40rem 30rem at 90% -10%, rgba(201, 255, 71, 0.10), transparent 60%),
+    radial-gradient(36rem 30rem at -10% 10%, rgba(201, 255, 71, 0.06), transparent 60%);
+}
+
+/* ============================================================
+   Glow shadows & lime surface
+   ============================================================ */
+.glow-lime {
+  box-shadow: 0 0 0 1px rgba(201, 255, 71, 0.25), 0 18px 50px -12px rgba(201, 255, 71, 0.35);
+}
+.glow-emerald { box-shadow: 0 18px 50px -16px rgba(201, 255, 71, 0.35); }
+
+.surface-lime { background-color: var(--lime); color: #000; }
+.surface-volt { background-color: var(--lime); color: #000; }
+
+.ring-glow:focus-within {
+  box-shadow: 0 0 0 4px rgba(201, 255, 71, 0.18);
+}
+
+/* ============================================================
+   Glass navbar (dark)
+   ============================================================ */
+.glass-nav {
+  background-color: rgba(10, 10, 10, 0.85);
+  backdrop-filter: saturate(160%) blur(12px);
+  -webkit-backdrop-filter: saturate(160%) blur(12px);
+}
+
+.glass-dark {
+  background-color: rgba(10, 10, 10, 0.6);
+  backdrop-filter: saturate(160%) blur(12px);
+  -webkit-backdrop-filter: saturate(160%) blur(12px);
+}
+
+/* ============================================================
+   Card lift
+   ============================================================ */
+.card-lift {
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+  will-change: transform;
+}
+.card-lift:hover { transform: translateY(-6px); }
+
+/* ============================================================
+   Animated chip dot
+   ============================================================ */
+.live-dot {
+  position: relative;
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: var(--lime);
+}
+.live-dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: var(--lime);
+  animation: ping-soft 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* ============================================================
+   Button shine sweep
+   ============================================================ */
+.btn-shine { position: relative; overflow: hidden; }
+.btn-shine::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  transform: skewX(-18deg);
+  transition: left 0.7s ease;
+  pointer-events: none;
+}
+.btn-shine:hover::before { left: 160%; }
+
+/* ============================================================
+   Marquee
+   ============================================================ */
+.marquee { display: flex; width: max-content; animation: marquee 32s linear infinite; }
+.marquee:hover { animation-play-state: paused; }
+
+/* ============================================================
+   Keyframes
+   ============================================================ */
+@keyframes ping-soft {
+  0% { transform: scale(1); opacity: 0.7; }
+  75%, 100% { transform: scale(2.4); opacity: 0; }
+}
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+.animate-float { animation: float-y 6s ease-in-out infinite; }
+.animate-float-slow { animation: float-y 9s ease-in-out infinite; }
+
+@keyframes gradient-pan {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.animate-gradient { background-size: 200% 200%; animation: gradient-pan 8s ease infinite; }
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .marquee { animation: none; }
+}

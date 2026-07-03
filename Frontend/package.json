@@ -1,0 +1,29 @@
+{
+  "name": "booksall-web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "ckeditor5": "^48.3.0",
+    "nuxt": "^3.13.2",
+    "vue": "^3.5.12",
+    "vue-router": "^4.4.5"
+  },
+  "devDependencies": {
+    "@nuxt/image": "^1.8.1",
+    "@nuxt/ui": "^2.18.7",
+    "@nuxtjs/robots": "^4.1.11",
+    "@nuxtjs/sitemap": "^6.1.5",
+    "@pinia/nuxt": "^0.5.5",
+    "@vueuse/core": "^11.1.0",
+    "@vueuse/motion": "^2.2.6",
+    "@vueuse/nuxt": "^11.1.0",
+    "pinia": "^2.2.4"
+  }
+}

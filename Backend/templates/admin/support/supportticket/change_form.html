@@ -1,0 +1,46 @@
+{% extends "admin/change_form.html" %}
+{% load i18n %}
+
+{# WHMCS-style two-column ticket layout. We don't touch how the form is
+   processed at all — this just re-slots the same fieldsets/inlines Django
+   already builds (SupportTicketAdmin.get_fieldsets tags each fieldset with
+   either "bk-ticket-main-fs" or "bk-ticket-side-fs") into a conversation
+   column on the left and a compact metadata + quick-actions column on the
+   right, instead of one long vertical stack. #}
+
+{% block field_sets %}
+<div class="bk-ticket-layout">
+  <div class="bk-ticket-main">
+    {% for fieldset in adminform %}
+      {% if "bk-ticket-side-fs" not in fieldset.classes %}
+        {% include "admin/includes/fieldset.html" %}
+      {% endif %}
+    {% endfor %}
+    {% for inline_admin_formset in inline_admin_formsets %}
+      {% include inline_admin_formset.opts.template %}
+    {% endfor %}
+  </div>
+
+  <div class="bk-ticket-side">
+    {% if original %}
+      <div class="bk-quick-actions bk-quick-actions--sidebar">
+        <span class="bk-qa-label">{% translate "Quick actions" %}</span>
+        <button type="submit" name="_status_open" class="bk-qa">{% translate "Open" %}</button>
+        <button type="submit" name="_status_in_progress" class="bk-qa">{% translate "In progress" %}</button>
+        <button type="submit" name="_status_answered" class="bk-qa bk-qa-primary">{% translate "Save & Answered" %}</button>
+        <button type="submit" name="_status_resolved" class="bk-qa bk-qa-primary">{% translate "Resolve" %}</button>
+        <button type="submit" name="_status_closed" class="bk-qa bk-qa-muted">{% translate "Close" %}</button>
+        <button type="submit" name="_assign_me" class="bk-qa">{% translate "Assign to me" %}</button>
+      </div>
+    {% endif %}
+    {% for fieldset in adminform %}
+      {% if "bk-ticket-side-fs" in fieldset.classes %}
+        {% include "admin/includes/fieldset.html" %}
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+
+{# Inlines are already rendered inside .bk-ticket-main above. #}
+{% block inline_field_sets %}{% endblock %}
